@@ -1,0 +1,11 @@
+{
+  "name": "m104-bus-alert",
+  "version": "1.0.0",
+  "description": "Sends daily SMS with M104 bus arrival times at 86th & Broadway",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["mta", "bus", "nyc", "sms"],
+  "license": "MIT"
+}
