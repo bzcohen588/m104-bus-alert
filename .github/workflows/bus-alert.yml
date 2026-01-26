@@ -20,5 +20,4 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
-          MANUAL_RUN: ${{ github.event_name ==               
-  'workflow_dispatch' }}
+          MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
