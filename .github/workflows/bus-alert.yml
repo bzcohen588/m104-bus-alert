@@ -17,7 +17,7 @@ jobs:
       - run: npm install && node index.js
         env:
           MTA_API_KEY: ${{ secrets.MTA_API_KEY }}
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
-          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
