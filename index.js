@@ -1,10 +1,11 @@
 const https = require('https');
+const nodemailer = require('nodemailer');
 
 // Configuration from environment variables
 const MTA_API_KEY = process.env.MTA_API_KEY;
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const GMAIL_ADDRESS = process.env.GMAIL_ADDRESS;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const PHONE_NUMBER = process.env.PHONE_NUMBER; // Just digits, e.g., 2125551234
-const FROM_EMAIL = process.env.FROM_EMAIL; // Your verified SendGrid sender
 
 // M104 Southbound at Broadway & W 86 St
 const STOP_ID = '403162';
@@ -123,26 +124,24 @@ function formatMessage(arrivals) {
 }
 
 async function sendSMS(message) {
-  // Send via SendGrid to Verizon's email-to-SMS gateway
-  const toEmail = `${PHONE_NUMBER}@vtext.com`;
-
-  const emailData = {
-    personalizations: [{ to: [{ email: toEmail }] }],
-    from: { email: FROM_EMAIL },
-    subject: 'M104 Bus', // Subject appears as sender name in SMS
-    content: [{ type: 'text/plain', value: message }]
-  };
-
-  const response = await httpsRequest('https://api.sendgrid.com/v3/mail/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${SENDGRID_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(emailData)
+  // Send via Gmail to Verizon's email-to-SMS gateway
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: GMAIL_ADDRESS,
+      pass: GMAIL_APP_PASSWORD
+    }
   });
 
-  return response;
+  const mailOptions = {
+    from: GMAIL_ADDRESS,
+    to: `${PHONE_NUMBER}@vtext.com`,
+    subject: 'M104',
+    text: message
+  };
+
+  const result = await transporter.sendMail(mailOptions);
+  return result;
 }
 
 function isWithinRunWindow() {
@@ -162,8 +161,8 @@ function isWithinRunWindow() {
 
 async function main() {
   // Check if we're in the right time window (handles DST with dual cron jobs)
-  if (process.env.MANUAL_RUN !== 'true' &&                  
-  !isWithinRunWindow()) {
+  // Skip this check for manual runs (MANUAL_RUN=true)
+  if (process.env.MANUAL_RUN !== 'true' && !isWithinRunWindow()) {
     console.log('Outside run window (7:45-8:10 AM ET). Skipping.');
     return;
   }
@@ -172,9 +171,9 @@ async function main() {
 
   // Validate environment variables
   if (!MTA_API_KEY) throw new Error('MTA_API_KEY is required');
-  if (!SENDGRID_API_KEY) throw new Error('SENDGRID_API_KEY is required');
+  if (!GMAIL_ADDRESS) throw new Error('GMAIL_ADDRESS is required');
+  if (!GMAIL_APP_PASSWORD) throw new Error('GMAIL_APP_PASSWORD is required');
   if (!PHONE_NUMBER) throw new Error('PHONE_NUMBER is required');
-  if (!FROM_EMAIL) throw new Error('FROM_EMAIL is required');
 
   try {
     const data = await fetchBusArrivals();
