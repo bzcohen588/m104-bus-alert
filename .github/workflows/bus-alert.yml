@@ -1,25 +1,26 @@
- name: M104 Bus Alert                                                         
-                                                                               
-  on:                                                                          
-    schedule:                                                                  
-      - cron: '58 11 * * 1-5'                                                  
-      - cron: '58 12 * * 1-5'                                                  
-    workflow_dispatch:                                                         
-                                                                               
-  jobs:                                                                        
-    send-bus-alert:                                                            
-      runs-on: ubuntu-latest                                                   
-      steps:                                                                   
-        - name: Checkout repository                                            
-          uses: actions/checkout@v4                                            
-        - name: Setup Node.js                                                  
-          uses: actions/setup-node@v4                                          
-          with:                                                                
-            node-version: '20'                                                 
-        - name: Send bus alert                                                 
-          env:                                                                 
-            MTA_API_KEY: ${{ secrets.MTA_API_KEY }}                            
-            SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}                  
-            PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}                          
-            FROM_EMAIL: ${{ secrets.FROM_EMAIL }}                              
+name: M104 Bus Alert                                      
+                                                            
+  on:                                                       
+    schedule:                                               
+      - cron: '58 11 * * 1-5'                               
+      - cron: '58 12 * * 1-5'                               
+    workflow_dispatch:                                      
+                                                            
+  jobs:                                                     
+    send-bus-alert:                                         
+      runs-on: ubuntu-latest                                
+      steps:                                                
+        - name: Checkout repository                         
+          uses: actions/checkout@v4                         
+        - name: Setup Node.js                               
+          uses: actions/setup-node@v4                       
+          with:                                             
+            node-version: '20'                              
+        - name: Send bus alert                              
+          env:                                              
+            MTA_API_KEY: ${{ secrets.MTA_API_KEY }}         
+            SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY  
+  }}                                                        
+            PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}       
+            FROM_EMAIL: ${{ secrets.FROM_EMAIL }}           
           run: node index.js
