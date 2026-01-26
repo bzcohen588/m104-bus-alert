@@ -7,5 +7,8 @@
     "start": "node index.js"
   },
   "keywords": ["mta", "bus", "nyc", "sms"],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  }
 }
