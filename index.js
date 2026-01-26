@@ -162,7 +162,8 @@ function isWithinRunWindow() {
 
 async function main() {
   // Check if we're in the right time window (handles DST with dual cron jobs)
-  if (!isWithinRunWindow()) {
+  if (process.env.MANUAL_RUN !== 'true' &&                  
+  !isWithinRunWindow()) {
     console.log('Outside run window (7:45-8:10 AM ET). Skipping.');
     return;
   }
