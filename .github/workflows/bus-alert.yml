@@ -1,23 +1,36 @@
 name: M104 Bus Alert
 
 on:
+  # Run at 7:58 AM ET (12:58 UTC during EST, 11:58 UTC during EDT)
+  # Using 11:58 UTC for EDT (daylight saving time - most of the school year)
   schedule:
-    - cron: '58 11 * * 1-5'
-    - cron: '58 12 * * 1-5'
+    - cron: '58 11 * * 1-5'  # 7:58 AM ET (EDT) Mon-Fri
+    - cron: '58 12 * * 1-5'  # 7:58 AM ET (EST) Mon-Fri - winter months
+
+  # Allow manual trigger for testing
   workflow_dispatch:
 
 jobs:
   send-bus-alert:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install && node index.js
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Send bus alert
         env:
           MTA_API_KEY: ${{ secrets.MTA_API_KEY }}
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
           MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
+        run: node index.js
